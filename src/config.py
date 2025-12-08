@@ -1,0 +1,16 @@
+# src/config.py
+BATCH_SIZE = 128
+EPOCHS = 10
+LR = 3e-4
+WEIGHT_DECAY = 0.05
+
+IMG_SIZE = 48
+PATCH = 4
+DIM = 512
+DEPTH = 8
+HEADS = 8
+MLP_R = 4
+
+R_MAX = 0.6
+ALPHA = 2
+NUM_CLASSES = 10
