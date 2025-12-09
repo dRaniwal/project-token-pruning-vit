@@ -28,7 +28,9 @@ The results show:
 │   ├── vit_pruned.pth
 └── README.md
 ```
-
+* **models/** contains both the trained models, one trained without Pruning(vit_baseline.pth) and one with pruning(vit_pruned.pth)
+* **notebooks/** contains the kaggle notebooks, where models were trained and evaluated
+* **src/** contains the indivisual components which can be used for further testing and optimisations
 ---
 
 # 1. Bases of Token Pruning Used
