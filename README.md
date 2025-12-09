@@ -269,3 +269,134 @@ This is the best overall speed-accuracy tradeoff.
 * Applying pruning at inference alone yields substantial speedups.
 
 
+---
+
+# Further Research
+
+This project opens several promising directions for deeper exploration and optimization of token pruning in Vision Transformers. A few major research paths are outlined below.
+
+---
+
+## 1. CLS Attention Weight Pruning vs Overall Attention Mean Pruning
+
+Two different token-importance estimation strategies were considered:
+
+### **a. CLS Attention Weight Pruning**
+
+* Uses the attention weight assigned **from CLS → each patch**.
+* Measures “how important each patch is for classification”.
+* Advantages:
+
+  * Computationally cheap.
+  * Directly tied to the final prediction.
+  * Works extremely well for classification tasks.
+* Questions for further study:
+
+  * Does CLS attention correlate strongly with semantic relevance in harder datasets?
+  * Can CLS attention mislead pruning early in training?
+
+### **b. Overall Attention Mean of Each Patch**
+
+* Computes **how much each patch is attended to by all other patches**.
+* Advantages:
+
+  * More global measure of importance.
+  * May capture scene context better.
+* Research points:
+
+  * Does this yield better spatial understanding?
+  * Does overall-attention pruning preserve fine-grained features?
+
+### **Comparative Research Goals**
+
+* Benchmark both methods across datasets (CIFAR-100, TinyImageNet, ImageNet).
+* Study stability during early vs late layers.
+* Measure computational overhead differences.
+* Evaluate robustness under pruning schedules.
+
+---
+
+## 2. Searching for Optimal Values of r_max and α During Training
+
+The pruning schedule depends heavily on:
+
+* **r_max** → maximum pruning aggressiveness
+* **α** → curvature of the pruning schedule
+
+### Research directions:
+
+* Hyperparameter search for (r_max, α) pairs optimizing:
+
+  * training accuracy
+  * stability of gradients
+  * inference-time speedup
+* Investigate whether r_max and α should:
+
+  * be globally constant
+  * vary per layer
+  * adapt dynamically per batch based on attention distribution
+
+### Possible methods:
+
+* Grid search / Bayesian optimization
+* Reinforcement-learning based pruning policy
+* Meta-learning of pruning schedules
+
+---
+
+## 3. Advanced Pruning Behavior During Training
+
+### 3a. Amount of Pruning Across Epochs
+
+Early epochs:
+
+* Model learns low-level features → pruning should be gentle.
+
+Later epochs:
+
+* High-level semantics dominate → more aggressive pruning is possible.
+
+Research tasks:
+
+* Derive an **epoch-adaptive pruning schedule** based on validation loss slope or attention entropy.
+* Learn pruning schedule automatically (e.g., via a “pruning controller” module).
+
+---
+
+### 3b. Amount of Pruning Batch-by-Batch
+
+Instead of pruning only at epoch boundaries:
+
+* Measure attention statistics each batch.
+* Dynamically update pruning ratios.
+* Study how rapidly attention distributions shift during training.
+
+Research questions:
+
+* Does frequent pruning improve generalization?
+* Does batch-wise pruning destabilize attention heads?
+* What is the optimal granularity of pruning updates?
+
+---
+
+### 3c. Varying Pruning Based on Mean Attention Scores
+
+Current CLS-based pruning uses mean attention from CLS to each patch.
+
+More advanced ideas:
+
+* Use **moving averages** of attention scores.
+* Use **normalized scores** to stabilize early training.
+* Prune based on:
+
+  * variance of attention
+  * entropy of attention distribution
+  * attention sharpness metrics
+
+Potential investigations:
+
+* Does per-step adaptive pruning lead to better accuracy?
+* Is pruning correlated with feature redundancy?
+* Can pruning decisions be predicted using only shallow layers?
+
+
